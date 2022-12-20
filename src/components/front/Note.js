@@ -1,11 +1,12 @@
 import React from "react";
 
-function Note({id, content}) {
+function Note({id, content, onDelete}) {
   
     return (
       <div className="note-сontainer" id={id}>
+        <button className="note-close" onClick={() => onDelete(id)}>Х</button>
         <div className="note-header">
-          <div>{content}</div>
+          <p className="note-content">{content}</p>
         </div>
       </div>
     );

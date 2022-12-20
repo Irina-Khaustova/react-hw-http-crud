@@ -3,8 +3,6 @@ import {useEffect, useState} from "react"
 import './App.css';
 import Notes from "./components/front/Notes";
 import Form from "./components/front/Form";
-import {nanoid} from 'nanoid';
-
 
 function App() {
   
@@ -13,13 +11,16 @@ function App() {
     value: ''
   })
 
+ function getNotes1() {
+    fetch('http://localhost:9999/notes')
+    .then(response => response.json())
+    .then((getNotes) => {
+      setNotes(getNotes);
+    })
+}
+
   useEffect (() => {
-   fetch('http://localhost:9999/notes')
-      .then(response => response.json())
-      .then((getNotes) => {
-        setNotes(getNotes);
-        console.log(getNotes);
-      })
+    getNotes1();
   },[])
 
   const handleChange = function(evt) {
@@ -28,37 +29,37 @@ function App() {
   }
 
   const handleAdd = function() {
-    const newNote = {
-      id: `${nanoid()}`,
-      content: form.value
-  }
-
-  console.log(form.value)
-
-  console.log(JSON.stringify(newNote))
-
-  notes.push(newNote)
+    const newNote = form.value
   
-  setNotes(notes)
-  console.log(notes)
+    if(newNote) {
+  
+      fetch('http://localhost:9999/notes', {
+        method: 'POST',
+        body: JSON.stringify(newNote)
+      })
 
-
-  fetch('http://localhost:9999/notes', {
-    method: 'POST',
-    body: JSON.stringify(newNote)
-  })
-  .then((responce) => console.log(responce))
-
-  setForm({
-    value: ''
-  })
+      setForm({
+        value: ''
+      })
+      getNotes1();
+    }
   }
 
-  console.log(notes)
+  const handleDelete = function(id) {
+    fetch(`http://localhost:9999/notes/${id}`, {
+    method: 'DELETE',
+    })
+    
+     getNotes1();
+  }
+
+  const handleUpdete = function() {
+    getNotes1();
+  }
 
   return (
     <div className="App">
-      <Notes className="notes" noteList={notes}/>
+      <Notes className="notes" noteList={notes} onHandleDelete={handleDelete} onHandleUpdate={handleUpdete}/>
       <Form className="form" form={form} onhandleChange={handleChange} onHandleAdd={handleAdd}/>
     </div>
   );
